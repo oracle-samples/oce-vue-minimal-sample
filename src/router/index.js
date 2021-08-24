@@ -27,7 +27,12 @@ if (process.env.BASE_URL && !(process.env.BASE_URL === '/')) {
 // define the routes for this application
 const routes = [
   {
-    path: '/:slug?',
+    path: '/',
+    name: 'home',
+    component: Page,
+  },
+  {
+    path: '/page/:slug?',
     name: 'page',
     component: Page,
   },
