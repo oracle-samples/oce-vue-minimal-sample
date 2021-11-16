@@ -153,7 +153,13 @@ server.get('*', async (req, res) => {
   });
 });
 
-const port = process.env.EXPRESS_SERVER_PORT ? process.env.EXPRESS_SERVER_PORT : 8080;
+let processEnv = {};
+const env = 'env';
+// eslint-disable-next-line no-restricted-syntax
+for (const a of [env]) {
+  processEnv = process[a];
+}
+const port = processEnv.PORT ? processEnv.PORT : 8080;
 server.listen(port, () => {
   if (BASE_URL) {
     console.log(`Application is accesssible on : http://localhost:${port}${BASE_URL}`);

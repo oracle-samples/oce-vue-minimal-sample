@@ -1,14 +1,14 @@
 {
   "name": "oce-vue-minimal-sample",
-  "description": "A simple site built using Vue and loading content from Oracle Content Management.",
-  "version": "21.8.1",
+  "description": "A simple site built using Vue and Oracle Content Management",
+  "version": "21.11.1",
   "author": "Oracle America, Inc.",
   "license": "UPL-1.0",
   "scripts": {
     "build": "rm -rf ./dist && npm run build:client && npm run build:server",
     "build:client": "vue-cli-service build",
     "build:server": "cross-env SSR=1 vue-cli-service build",
-    "start": " node dist/server/serverBundle.js",
+    "start": "node dist/server/serverBundle.js",
     "buildPath": "rm -rf ./dist && npm run buildPath:client && npm run buildPath:server",
     "buildPath:server": "cross-env BASE_URL=/samples/oce-vue-minimal-sample vue-cli-service build --dest dist/client/samples/oce-vue-minimal-sample",
     "buildPath:client": "cross-env BASE_URL=/samples/oce-vue-minimal-sample SSR=1 vue-cli-service build --dest dist/server/samples/oce-vue-minimal-sample",
@@ -16,13 +16,13 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "@oracle/content-management-sdk": "~1.2.0",
+    "@oracle/content-management-sdk": "^1.3.0",
     "@vue/server-renderer": "~3.0.2",
     "core-js": "~3.6.5",
     "dotenv": "~8.2.0",
     "express": "~4.17.1",
     "https-proxy-agent": "~5.0.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "~2.6.1",
     "regenerator-runtime": "~0.13.7",
     "serialize-javascript": "~5.0.1",
     "vue": "~3.0.0",
@@ -31,23 +31,22 @@
     "xss": "~1.0.8"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "~7.13.10",
+    "@babel/eslint-parser": "~7.16.0",
     "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.11",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "~3.0.0",
     "@vue/eslint-config-airbnb": "~5.1.0",
     "cross-env": "~7.0.2",
     "eslint": "~7.11.0",
+    "eslint-config-airbnb-base": "~14.2.1",
     "eslint-plugin-import": "~2.22.1",
-    "eslint-plugin-vue": "~7.1.0",
+    "eslint-plugin-vue": "~8.0.3",
     "webpack-manifest-plugin": "~3.0.0",
     "webpack-node-externals": "~2.5.2"
   },
   "browserslist": [
     "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+    "last 2 versions"
   ]
 }
