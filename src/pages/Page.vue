@@ -8,6 +8,9 @@
   <div v-if="data.hasError">
     <Error :errorObj="data" />
   </div>
+  <div v-else-if="data.slug === 'people'">
+    <Person :gqldata ="data"/>
+  </div>
   <div v-else>
     <section :class="`content ${section.fields.type}`" :key="section.id"
       v-for="(section) in data.fields.sections">
@@ -20,12 +23,14 @@
 // import any components this page uses here
 import Section from '../components/Section.vue';
 import Error from '../components/Error.vue';
+import Person from '../components/Person.vue';
 
 export default {
   name: 'Page',
   components: {
     Section,
     Error,
+    Person,
   },
   data() {
     return {
@@ -47,6 +52,9 @@ export default {
   // when it changes it will update itself based on some function
   computed: {
     data() {
+      if (this.slug === 'people') {
+        return this.$store.state.peoplePageData;
+      }
       return this.$store.state.pageData;
     },
   },
@@ -65,8 +73,15 @@ export default {
   },
   methods: {
     fetchData() {
+      let data = {};
+      // People is a special case and is handled by GraphQL in the store
+      if (this.slug === 'people') {
+        data = this.$store.dispatch('fetchPeoplePage', this.slug);
+      } else {
       // return the Promise from the action
-      return this.$store.dispatch('fetchPage', this.slug);
+        data = this.$store.dispatch('fetchPage', this.slug);
+      }
+      return data;
     },
   },
 

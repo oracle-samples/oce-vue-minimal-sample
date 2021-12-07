@@ -68,6 +68,8 @@ module.exports = {
           'process.env.FOOTER_LOGO_FILE_NAME': JSON.stringify(process.env.FOOTER_LOGO_FILE_NAME),
           'process.env.HOME_IMAGE_FILE_NAME': JSON.stringify(process.env.HOME_IMAGE_FILE_NAME),
           'process.env.CONTACTUS_IMAGE_FILE_NAME': JSON.stringify(process.env.CONTACTUS_IMAGE_FILE_NAME),
+          'process.env.oce_https_proxy': JSON.stringify(process.env.oce_https_proxy),
+          'process.env.oce_http_proxy': JSON.stringify(process.env.oce_http_proxy),
         };
         return args;
       });
