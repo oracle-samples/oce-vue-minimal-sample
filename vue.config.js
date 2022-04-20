@@ -81,6 +81,15 @@ module.exports = {
 
       // Specify the root file of the client application
       webpackConfig.entry('app').clear().add('./src/client/main.js');
+
+      webpackConfig.resolve.set('fallback', {
+        assert: false,
+        http: false,
+        https: false,
+        net: false,
+        tls: false,
+        url: false,
+      });
     } else {
       // Server side bundle settings
 
