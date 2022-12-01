@@ -1,7 +1,7 @@
 {
   "name": "oce-vue-minimal-sample",
   "description": "A simple site built using Vue and Oracle Content Management",
-  "version": "22.4.2",
+  "version": "22.12.1",
   "author": "Oracle America, Inc.",
   "license": "UPL-1.0",
   "repository": {
@@ -9,7 +9,7 @@
     "url": "https://github.com/oracle-samples/oce-vue-minimal-sample.git"
   },
   "scripts": {
-    "build": "rm -rf ./dist && npm run build:client && npm run build:server",
+    "build": "npm run build:client && npm run build:server",
     "build:client": "vue-cli-service build",
     "build:server": "cross-env SSR=1 vue-cli-service build",
     "start": "node dist/server/serverBundle.js",
@@ -22,6 +22,7 @@
   "dependencies": {
     "@oracle/content-management-sdk": "^1.4.0",
     "@vue/server-renderer": "~3.2.0",
+    "body-parser": "~1.20.0",
     "core-js": "~3.6.5",
     "cross-fetch": "~3.1.4",
     "dotenv": "~8.2.0",

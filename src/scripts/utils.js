@@ -2,7 +2,6 @@
  * Copyright (c) 2021 Oracle and/or its affiliates.
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
  */
-import { isAuthNeeded } from './server-config-utils';
 
 /**
  * When authorization is needed for images, change the image URL so that it
@@ -16,10 +15,11 @@ import { isAuthNeeded } from './server-config-utils';
  * @param String originalUrl the image's original url
  */
 export default function getImageUrl(originalUrl) {
-  if (isAuthNeeded()) {
+  if (process.env.CONTENT_MODE !== 'delivery') {
     // strip off the server URL from the front of the URL to make a relative URL
     // causing the request to go to this application's Express server
-    return originalUrl.replace(process.env.SERVER_URL, '');
+    const url = new URL(originalUrl);
+    return url.pathname + url.search;
   }
   return originalUrl;
 }

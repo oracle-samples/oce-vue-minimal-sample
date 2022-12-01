@@ -12,10 +12,12 @@
     <Person :gqldata ="data"/>
   </div>
   <div v-else>
-    <section :class="`content ${section.fields.type}`" :key="section.id"
-      v-for="(section) in data.fields.sections">
-      <Section :section="section" />
-    </section>
+    <div v-if="data.fields.sections">
+      <section :class="`content ${section.fields.type}`" :key="section.id"
+        v-for="(section) in data.fields.sections">
+        <Section :section="section" />
+      </section>
+    </div>
   </div>
 </template>
 

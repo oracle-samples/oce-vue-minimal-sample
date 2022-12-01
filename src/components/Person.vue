@@ -32,7 +32,7 @@
       <div v-for="person in gqldata.people" :key="person.id" >
         <section className="person">
           <img className="profile_picture"
-          :src="person.fields.renditions[0].file.url" :alt="person.fields.fullname" />
+          :src="modifiedUrl(person.fields.renditions[0].file.url)" :alt="person.fields.fullname" />
           <div className="profile">
             <div className="profile_name">{{person.fields.fullname}}</div>
             <div className="profile_position">{{person.fields.title}}</div>
@@ -46,6 +46,7 @@
 
 <script>
 import filterXSS from 'xss';
+import getImageUrl from '../scripts/utils';
 
 export default {
   name: 'Person',
@@ -78,6 +79,9 @@ export default {
     fetchData() {
       // return the Promise from the action
       return this.$store.dispatch('getRenditionURLs', this.gqldata.announcement.image.id);
+    },
+    modifiedUrl(url) {
+      return getImageUrl(url);
     },
   },
 

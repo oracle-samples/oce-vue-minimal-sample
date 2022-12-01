@@ -6,6 +6,12 @@
 import fetch from 'cross-fetch';
 
 import createHttpsProxyAgent from 'https-proxy-agent';
+import getClient from './server-config-utils';
+
+const isPreview = process.env.CONTENT_MODE === 'preview';
+let serverUrlGraphQL = isPreview
+  ? '/content/preview/api/v1.1/graphql'
+  : `${process.env.SERVER_URL}/content/published/api/v1.1/graphql`;
 
 function extractRequiredPeopleFields(queryResult) {
   const result = { announcement: {}, people: [] };
@@ -23,6 +29,12 @@ function extractRequiredPeopleFields(queryResult) {
 }
 
 export default async function fetchPeopleData(peopleSlug) {
+  if (isPreview) {
+    const prefix = typeof window !== 'undefined'
+      ? `${window.origin}`
+      : `${process.env.SERVER_URL}`;
+    serverUrlGraphQL = prefix + serverUrlGraphQL;
+  }
   try {
     const channelToken = `${process.env.CHANNEL_TOKEN}`;
     const fetchParams = {
@@ -107,14 +119,15 @@ export default async function fetchPeopleData(peopleSlug) {
     // Figure out if we need a proxy. Only needed on server-side render
     if (typeof window === 'undefined' && typeof process === 'object') {
       const proxyServer = process.env.SERVER_URL.startsWith('https')
-        ? process.env.oce_https_proxy : process.env.oce_https_proxy;
+        ? process.env.oce_https_proxy : process.env.oce_http_proxy;
       if (proxyServer) {
         const proxy = createHttpsProxyAgent(proxyServer);
         fetchParams.agent = proxy;
       }
+      const authValue = await getClient().getAuthorizationHeaderValue();
+      fetchParams.headers.Authorization = authValue;
     }
-
-    const response = await fetch(`${process.env.SERVER_URL}/content/published/api/v1.1/graphql`, fetchParams);
+    const response = await fetch(serverUrlGraphQL, fetchParams);
     const queryResult = await response.json();
     return extractRequiredPeopleFields(queryResult);
   } catch (error) {

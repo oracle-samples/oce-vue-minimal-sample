@@ -19,7 +19,9 @@ import express from 'express';
 import serialize from 'serialize-javascript';
 import { renderToString } from '@vue/server-renderer';
 import buildApp from '../app';
-import { getAuthValue, isAuthNeeded } from '../scripts/server-config-utils';
+import getClient from '../scripts/server-config-utils';
+
+const bodyParser = require('body-parser');
 
 // parse the .env file
 dotenv.config();
@@ -45,16 +47,14 @@ server.use(`${BASE_URL}/img`, express.static(path.join('./', clientDistPath, 'im
 server.use(`${BASE_URL}/js`, express.static(path.join('./', clientDistPath, 'js')));
 server.use(`${BASE_URL}/css`, express.static(path.join('./', clientDistPath, 'css')));
 server.use(`${BASE_URL}/favicon.png`, express.static(path.join('./', clientDistPath, 'favicon.png')));
+// The bodyParser is needed since we need to get the req body for graphql queries
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(bodyParser.json());
 
 /*
  * Handle the proxy request.
  */
 function handleContentRequest(req, res, authValue) {
-  // only proxy GET requests, ignore all other requests
-  if (req.method !== 'GET') {
-    return;
-  }
-
   // build the URL to the real server
   let content = process.env.SERVER_URL.charAt(process.env.SERVER_URL.length - 1) === '/'
     ? 'content' : '/content';
@@ -68,6 +68,7 @@ function handleContentRequest(req, res, authValue) {
   if (authValue) {
     options.headers = { Authorization: authValue };
   }
+  options.method = req.method;
 
   // define a function that writes the proxied content to the response
   const writeProxyContent = (proxyResponse) => {
@@ -81,7 +82,13 @@ function handleContentRequest(req, res, authValue) {
   const proxy = (oceUrl.startsWith('https'))
     ? https.request(oceUrl, options, (proxyResponse) => writeProxyContent(proxyResponse))
     : http.request(oceUrl, options, (proxyResponse) => writeProxyContent(proxyResponse));
-
+  if (req.method === 'POST') {
+    proxy.write(JSON.stringify(req.body));
+  }
+  // Handling error event
+  proxy.on('error', (err) => {
+    console.log('Error in server.js while executing proxy request : ', err);
+  });
   // write the proxied response to this request's response
 
   req.pipe(proxy, {
@@ -105,13 +112,14 @@ function handleContentRequest(req, res, authValue) {
  * - 'src/scripts/utils.getImageUrl' for the code proxying requests for image binaries
  */
 server.use('/content/', (req, res) => {
-  if (isAuthNeeded()) {
-    getAuthValue().then((authValue) => {
+  const client = getClient();
+  client.getAuthorizationHeaderValue().then((authValue) => {
+    if (authValue !== '') {
       handleContentRequest(req, res, authValue);
-    });
-  } else {
-    handleContentRequest(req, res, '');
-  }
+    } else {
+      handleContentRequest(req, res, '');
+    }
+  });
 });
 
 /*
@@ -159,6 +167,7 @@ const env = 'env';
 for (const a of [env]) {
   processEnv = process[a];
 }
+
 const port = processEnv.PORT ? processEnv.PORT : 8080;
 server.listen(port, () => {
   if (BASE_URL) {
